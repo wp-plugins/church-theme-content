@@ -3,10 +3,12 @@
  * Plugin Name: Church Theme Content
  * Plugin URI: http://churchthemes.com/plugins/church-theme-content
  * Description: Provides compatible themes with sermon, event, person and location post types. A <strong>compatible theme is required</strong> for displaying content.
- * Version: 1.0.2
+ * Version: 1.0.3
  * Author: churchthemes.com
  * Author URI: http://churchthemes.com
  * License: http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+ * Text Domain: church-theme-content
+ * Domain Path: /languages
  * 
  * @package   Church_Theme_Content
  * @copyright Copyright (c) 2013, churchthemes.com
@@ -137,10 +139,6 @@ class Church_Theme_Content {
 	 * If not, then the 'languages' direcory inside the plugin will be used.
 	 * It is ideal to keep translation files outside of the plugin to avoid loss during updates.
 	 *
-	 * To Do: load_plugin_textdomain() will presumably be updated as load_theme_textdomain() was to 
-	 * natively support external loading from WP_LANG_DIR. When this is so, simplify this function.
-	 * http://core.trac.wordpress.org/changeset/22346
-	 *
 	 * @since 0.9
 	 * @access public
 	 */
@@ -152,15 +150,15 @@ class Church_Theme_Content {
 		// WordPress core locale filter
 		$locale = apply_filters( 'plugin_locale', get_locale(), $domain );
 
-		// Does external MO file exist? Load it
-		// This is ideal since it is not wiped out by plugin updates
+		// WordPress 3.6 and earlier don't auto-load from wp-content/languages, so check and load manually
+		// http://core.trac.wordpress.org/changeset/22346
 		$external_mofile = WP_LANG_DIR . '/plugins/'. $domain . '-' . $locale . '.mo';
-		if ( file_exists( $external_mofile ) ) {
+		if ( get_bloginfo( 'version' ) <= 3.6 && file_exists( $external_mofile ) ) { // external translation exists
 			load_textdomain( $domain, $external_mofile );
 		}
 
-		// Otherwise use MO file stored in plugin
-		// This is not ideal except for pre-made, unedited translations included with the plugin
+		// Load normally
+		// Either using WordPress 3.7+ or older version with external translation
 		else {
 			$languages_dir = CTC_DIR . '/' . trailingslashit( CTC_LANG_DIR ); // ensure trailing slash
 			load_plugin_textdomain( $domain, false, $languages_dir );
