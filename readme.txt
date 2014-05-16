@@ -2,7 +2,7 @@
 Contributors: churchthemes, stevengliebe
 Tags: church, churches, sermon, sermons, ministry, ministries
 Requires at least: 3.6
-Tested up to: 3.9
+Tested up to: 3.9.1
 Stable tag: trunk
 License: http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 
@@ -24,7 +24,7 @@ It enables users to manage *sermons*, *events*, *people* and *locations* to be d
 
 Experienced WordPress developers agree that functionality like this does not belong in themes since themes are intended only to control the appearance of a WordPress site. Content that users might expect to take with them if they switch themes should "live" in a plugin. Similarly, our approach is not to display content using the plugin since themes offer more control for that purpose. This is why a **compatible theme is required**.
 
-See [screenshots](http://wordpress.org/plugins/church-theme-content/screenshots/) for a tour of features. Note also that sermon audio [podcasting](http://churchthemes.com/guides/user/content/sermons/sermon-podcasting/) is built-in.
+See [screenshots](http://wordpress.org/plugins/church-theme-content/screenshots/) for a tour of features. Note also that sermon audio [podcasting](http://churchthemes.com/guides/user/content/sermons/sermon-podcasting/) is built-in and there is support for recurring events.
 
 = Developers =
 
@@ -37,7 +37,7 @@ You can follow development on [GitHub](https://github.com/churchthemes/church-th
 The following translations are included. Please feel free to [contribute](https://churchthemes.com/contact/) your own translations.
 
 * English (default)
-* Spanish (es_MX)
+* Spanish (es_MX and es_ES)
 * French (fr_FR) by [Alexandre Koper](https://twitter.com/alexkoper)
 * Portuguese (pt_BR) by [Ministre.com.br](http://ministre.com.br)
 * Serbo-Croatian (sr_RS) by Borisa Djuraskovic of [Web Hosting Hub](http://www.webhostinghub.com)
