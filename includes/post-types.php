@@ -46,12 +46,12 @@ function ctc_register_post_type_sermon() {
 			'with_front' 	=> false,
 			'feeds'			=> ctc_feature_supported( 'sermons' )
 		),
-		'supports' 		=> array( 'title', 'editor', 'excerpt', 'thumbnail', 'comments', 'author', 'revisions' ), // 'editor' required for media upload button (see Meta Boxes note below about hiding)
+		'supports' 		=> array( 'title', 'editor', 'excerpt', 'publicize', 'thumbnail', 'comments', 'author', 'revisions' ), // 'editor' required for media upload button (see Meta Boxes note below about hiding)
 		'taxonomies' 	=> array( 'ctc_sermon_topic', 'ctc_sermon_book', 'ctc_sermon_series', 'ctc_sermon_speaker', 'ctc_sermon_tag' ),
 		'menu_icon'		=> 'dashicons-video-alt3'
 	);
 	$args = apply_filters( 'ctc_post_type_sermon_args', $args ); // allow filtering
-		
+
 	// Registration
 	register_post_type(
 		'ctc_sermon',
@@ -61,7 +61,7 @@ function ctc_register_post_type_sermon() {
 }
 
 add_action( 'init', 'ctc_register_post_type_sermon' ); // register post type
- 
+
 /**********************************
  * EVENT
  **********************************/
@@ -95,17 +95,17 @@ function ctc_register_post_type_event() {
 			'with_front'	=> false,
 			'feeds'			=> ctc_feature_supported( 'events' ),
 		),
-		'supports' 		=> array( 'title', 'editor', 'excerpt', 'thumbnail', 'comments', 'author', 'revisions' ),
+		'supports' 		=> array( 'title', 'editor', 'excerpt', 'publicize', 'thumbnail', 'comments', 'author', 'revisions' ),
 		'menu_icon'		=> 'dashicons-calendar'
 	);
 	$args = apply_filters( 'ctc_post_type_event_args', $args ); // allow filtering
-	
+
 	// Registration
 	register_post_type(
 		'ctc_event',
 		$args
 	);
-	
+
 }
 
 add_action( 'init', 'ctc_register_post_type_event' ); // register post type
@@ -147,26 +147,26 @@ function ctc_location_post_type() {
 		'menu_icon'		=> 'dashicons-location'
 	);
 	$args = apply_filters( 'ctc_post_type_location_args', $args ); // allow filtering
-		
+
 	// Registration
 	register_post_type(
 		'ctc_location',
 		$args
 	);
-	
+
 }
 
 add_action( 'init', 'ctc_location_post_type' ); // register post type
 
 /**********************************
  * PERSON
- **********************************/ 
+ **********************************/
 
 /**
  * Register person post type
  *
  * @since 0.9
- */	
+ */
 function ctc_register_post_type_person() {
 
 	// Arguments
@@ -196,13 +196,13 @@ function ctc_register_post_type_person() {
 		'menu_icon'		=> 'dashicons-admin-users'
 	);
 	$args = apply_filters( 'ctc_post_type_person_args', $args ); // allow filtering
-	
+
 	// Registration
 	register_post_type(
 		'ctc_person',
 		$args
 	);
-	
+
 }
 
 add_action( 'init', 'ctc_register_post_type_person' ); // register post type
