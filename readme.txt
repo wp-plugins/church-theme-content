@@ -2,7 +2,7 @@
 Contributors: churchthemes, stevengliebe
 Tags: church, churches, sermon, sermons, ministry, ministries
 Requires at least: 3.6
-Tested up to: 3.9.1
+Tested up to: 4.0
 Stable tag: trunk
 License: http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 
@@ -37,7 +37,8 @@ You can follow development on [GitHub](https://github.com/churchthemes/church-th
 The following translations are included. Please feel free to [contribute](https://churchthemes.com/contact/) your own translations.
 
 * English (default)
-* Spanish (es_MX and es_ES)
+* Spanish (es_ES and es_MX)
+* German (de_DE) by [Matthias Drexler](https://plus.google.com/+MatthiasDrexler)
 * French (fr_FR) by [Alexandre Koper](https://twitter.com/alexkoper)
 * Portuguese (pt_BR) by [Ministre.com.br](http://ministre.com.br)
 * Serbo-Croatian (sr_RS) by Borisa Djuraskovic of [Web Hosting Hub](http://www.webhostinghub.com)
@@ -73,6 +74,7 @@ Yes, please see the [Developer Guide](http://churchthemes.com/guides/developer/c
 7. Add location
 8. People
 9. Add person
+10. Groups
 
 == Changelog ==
 
