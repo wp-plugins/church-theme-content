@@ -4,7 +4,7 @@
  *
  * @package    Church_Theme_Content
  * @subpackage Admin
- * @copyright  Copyright (c) 2013, churchthemes.com
+ * @copyright  Copyright (c) 2013 - 2015, churchthemes.com
  * @link       https://github.com/churchthemes/church-theme-content
  * @license    http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  * @since      0.9
@@ -46,15 +46,15 @@ function ctc_get_theme_support_notice() {
 
 		// Message has not been dismissed for this theme
 		if ( ! get_option( $option_id  ) ) {
-			
+
 			?>
 			<div class="error">
 			   <p><?php printf( __( 'The <b>%1$s</b> theme does not support the <b>%2$s</b> plugin. <a href="%3$s" target="_blank">More Information</a>, <a href="%4$s">Dismiss</a>', 'church-theme-content' ), wp_get_theme(), CTC_NAME, CTC_INFO_URL, add_query_arg( 'ctc_hide_theme_support_notice', '1' ) ); ?></p>
 			</div>
 			<?php
-			
+
 		}
-	
+
 	}
 
 }
@@ -79,7 +79,7 @@ function ctc_hide_theme_support_notice() {
 
 		// Mark notice for this theme as dismissed
 		update_option( $option_id, '1' );
-			
+
 	}
 
 }

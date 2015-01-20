@@ -4,7 +4,7 @@
  *
  * @package    Church_Theme_Content
  * @subpackage Functions
- * @copyright  Copyright (c) 2013, churchthemes.com
+ * @copyright  Copyright (c) 2013 - 2015, churchthemes.com
  * @link       https://github.com/churchthemes/church-theme-content
  * @license    http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  * @since      0.9
@@ -100,84 +100,85 @@ function ctc_array_merge_after_key( $original_array, $insert_array, $after_key )
 
 }
 
+/**
+ * Show array as HTML
+ *
+ * This is helpful for development / debugging
+ *
+ * @since 1.2
+ * @param array $array Array to format
+ * @param bool $return Return or echo output
+ */
+function ctc_print_array( $array, $return = false ) {
+
+	$result = '<pre>' . print_r( $array, true ) . '</pre>';
+
+	if ( empty($return) ) {
+		echo $result;
+	} else {
+		return $result;
+	}
+
+}
+
 /*************************************************
  * DATES
  *************************************************/
 
 /**
- * Move date forward
+ * Convert date and time to MySQL DATETIME format
  *
- * Move date forward by week, month or year until it is not in past (in case wp cron misses a beat).
+ * If no date, value will be 0000-00-00 00:00:00
+ * If no time, value will be 2014-10-28 00:00:00
  *
- * @since 0.9
- * @param string $date Date to move into the future
- * @param string $increment 'weekly', 'monthly' or 'yearly'
- * @return string Future date
+ * @since 1.2
+ * @param string $date Date in YYYY-mm-dd format (e.g. 2014-05-10 for May 5th, 2014)
+ * @param string $time Time in 24-hour hh-mm format (e.g. 08:00 for 8 AM or 13:12 for 1:12 PM)
+ * @return string Date and time in DATETIME format (e.g. 2014-05-10 13:12:00)
  */
-function ctc_increment_future_date( $date, $increment ) {
+function ctc_convert_to_datetime( $date, $time ) {
 
-	// In case no change could be made
-	$new_date = $date;
+	if ( empty( $date ) ) {
+		$date = '0000-00-00';
+	}
+	if ( empty( $time ) ) {
+		$time = '00:00';
+	}
 
-	// Get month, day and year, increment if date is valid
-	list( $y, $m, $d ) = explode( '-', $date );
-	if ( checkdate( $m, $d, $y ) ) {
+	$datetime = $date . ' ' . $time . ':00';
 
-		// Increment
-		switch ( $increment ) {
+	return apply_filters( 'ctc_convert_to_datetime', $datetime, $date, $time );
 
-			// Weekly
-			case 'weekly' :
+}
 
-				// Add 7 days
-				list( $y, $m, $d ) = explode( '-', date( 'Y-m-d', strtotime( $date ) + WEEK_IN_SECONDS ) );
+/*************************************************
+ * FUNCTIONS
+ *************************************************/
 
-				break;
+/**
+ * Check if a function is available
+ *
+ * This is helpful: http://bit.ly/100BpPJ
+ *
+ * @since 1.2
+ * @param string $function Name of function to check
+ * @return bool True if function exists and is not disabled
+ */
+function ctc_function_available( $function ) {
 
-			// Monthly
-			case 'monthly' :
+	$available = false;
 
-				// Move forward one month
-				if ( $m < 12 ) { // same year
-					$m++; // add one month
-				} else { // next year (old month is December)
-					$m = 1; // first month of year
-					$y++; // add one year
-				}
+	// Function exists?
+	if ( function_exists( $function ) ) {
 
-				break;
-
-			// Yearly
-			case 'yearly' :
-
-				// Move forward one year
-				$y++;
-
-				break;
-
-		}
-
-		// Day does not exist in month
-		// Example: Make "November 31" into 30 or "February 29" into 28 (for non-leap year)
-		$days_in_month = date( 't', mktime( 0, 0, 0, $m, 1, $y ) );
-		if ( $d > $days_in_month ) {
-			$d = $days_in_month;
-		}
-
-		// Form the date string
-		$new_date = date( 'Y-m-d', mktime( 0, 0, 0, $m, $d, $y ) ); // pad day, month with 0
-
-		// Is new date in past? Increment until it is not (automatic correction in case wp-cron misses a beat)
-		$today_ts = strtotime( date_i18n( 'Y-m-d' ) ); // localized
-		$new_date_ts = strtotime( $new_date );
-		while ( $new_date_ts < $today_ts ) {
-			$new_date = ctc_increment_future_date( $new_date, $increment );
-			$new_date_ts = strtotime( $new_date );
+		// Is it not disabled in php.ini?
+		$disabled_functions = explode( ',', ini_get( 'disable_functions' ) );
+		if ( ! in_array( $function, $disabled_functions ) ) {
+			$available = true;
 		}
 
 	}
 
-	// Return filterable
-	return apply_filters( 'ctc_move_date_forward', $new_date, $date, $increment );
+	return apply_filters( 'ctc_function_available', $available, $function );
 
 }
