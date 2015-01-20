@@ -52,7 +52,7 @@ if ( ! class_exists( 'CT_Meta_Box' ) ) {
 		public function __construct( $meta_box ) {
 
 			// Version - used in cache busting
-			$this->version = '1.0.6';
+			$this->version = '2.0';
 
 			// Prepare config
 			$this->prepare( $meta_box );
@@ -60,12 +60,6 @@ if ( ! class_exists( 'CT_Meta_Box' ) ) {
 			// Setup meta box
 			add_action( 'load-post-new.php', array( &$this, 'setup' ) ); // setup meta boxes on add
 			add_action( 'load-post.php', array( &$this, 'setup' ) ); // setup meta boxes on edit
-
-			// Enqueue styles
-			add_action( 'admin_enqueue_scripts', array( &$this, 'enqueue_styles' ) );
-
-			// Enqueue scripts
-			add_action( 'admin_enqueue_scripts', array( &$this, 'enqueue_scripts' ) );
 
 		}
 
@@ -80,7 +74,18 @@ if ( ! class_exists( 'CT_Meta_Box' ) ) {
 		 */
 		public function prepare( $meta_box ) {
 
-			// Get fields
+			// Filter meta box data (before anything)
+			$meta_box = apply_filters( 'ctmb_meta_box', $meta_box );
+			if ( ! empty( $meta_box['id'] ) ) { // filter meta box by its ID
+				$meta_box = apply_filters( 'ctmb_meta_box-' . $meta_box['id'], $meta_box );
+			}
+
+			// Filter fields by meta box ID
+			if ( ! empty( $meta_box['id'] ) ) { // filter meta box by its ID
+				$meta_box['fields'] = apply_filters( 'ctmb_fields-' . $meta_box['id'], $meta_box['fields'] );
+			}
+
+			// Get fields for looping
 			$fields = $meta_box['fields'];
 
 			// Fill array of visible fields with all by default
@@ -105,6 +110,9 @@ if ( ! class_exists( 'CT_Meta_Box' ) ) {
 
 				// Set visibility of fields based on filtered or unfiltered array
 				$meta_box['fields'][$key]['hidden'] = ! in_array( $key, (array) $visible_fields ) ? true : false; // set hidden true if not in array
+
+				// Allow filtering of individual fields after all other manipulations
+				$meta_box['fields'][$key] = apply_filters( 'ctmb_field-' . $key, $meta_box['fields'][$key] );
 
 			}
 
@@ -131,6 +139,15 @@ if ( ! class_exists( 'CT_Meta_Box' ) ) {
 
 				// Save meta boxes
 				add_action( 'save_post', array( &$this, 'save' ), 10, 2 ); // note: this always runs twice (once for revision, once for post)
+
+				// Enqueue styles
+				add_action( 'admin_enqueue_scripts', array( &$this, 'enqueue_styles' ) );
+
+				// Enqueue scripts
+				add_action( 'admin_enqueue_scripts', array( &$this, 'enqueue_scripts' ) );
+
+				// Localize scripts
+				add_action( 'admin_enqueue_scripts', array( &$this, 'localize_scripts' ) );
 
 			}
 
@@ -298,7 +315,8 @@ if ( ! class_exists( 'CT_Meta_Box' ) ) {
 			$data['esc_value'] = esc_attr( $data['value'] );
 			$data['esc_element_id'] = 'ctmb-input-' . esc_attr( $data['key'] );
 
-			// Prepare styles for elements (core WP styling)
+			// Prepare styles for elements
+			// regular-text and small-text are core WP styling
 			$default_classes = array(
 				'text'				=> 'regular-text',
 				'url'				=> 'regular-text',
@@ -310,6 +328,7 @@ if ( ! class_exists( 'CT_Meta_Box' ) ) {
 				'select'			=> '',
 				'number'			=> 'small-text',
 				'date'				=> '',
+				'time'				=> 'regular-text',
 
 			);
 			$classes = array();
@@ -482,7 +501,7 @@ if ( ! class_exists( 'CT_Meta_Box' ) ) {
 						$input .= '<div class="ctmb-date">';
 
 						// Month
-						$input .= '<select name="' . esc_attr( $data['key'] ) . '-month" id="' . $data['esc_element_id'] . '-month">';
+						$input .= '<select name="' . esc_attr( $data['key'] ) . '-month" id="' . $data['esc_element_id'] . '-month" class="ctmb-date-month">';
 						$input .= '<option value=""></option>';
 						for ( $i = 1; $i <= 12; $i++ ) {
 							$month_num = str_pad( $i, 2, '0', STR_PAD_LEFT );
@@ -495,10 +514,21 @@ if ( ! class_exists( 'CT_Meta_Box' ) ) {
 						$input .= ' <input type="number" name="' . esc_attr( $data['key'] ) . '-day" id="' . $data['esc_element_id'] . '-day" min="1" max="31" value="' . esc_attr( $day ) . '" class="ctmb-date-day">';
 
 						// Year
-						$input .= ', <input type="number" name="' . esc_attr( $data['key'] ) . '-year" id="' . $data['esc_element_id'] . '-year" min="2000" max="2100" value="' . esc_attr( $year ) . '" class="ctmb-date-year">';
+						// Set the max year to 2037 because that's when timestamps will die
+						// This is a precaution to avoid unexpected results
+						$input .= ', <input type="number" name="' . esc_attr( $data['key'] ) . '-year" id="' . $data['esc_element_id'] . '-year" min="2000" max="2037" value="' . esc_attr( $year ) . '" class="ctmb-date-year">';
 
 						// Container end
 						$input .= '</div>';
+
+						break;
+
+					// Time
+					// HTML5 <time> not supported by major browsers
+					// Using this instead (like Google Calendar): https://github.com/jonthornton/jquery-timepicker
+					case 'time':
+
+						$input = '<input type="text" ' . $data['common_atts'] . ' id="' . $data['esc_element_id'] . '" value="' . $data['esc_value'] . '" />';
 
 						break;
 
@@ -533,6 +563,15 @@ if ( ! class_exists( 'CT_Meta_Box' ) ) {
 					<div class="ctmb-value">
 
 						<?php echo $input; ?>
+
+						<?php
+						if (
+							! empty( $data['field']['after_input'] )
+							&& in_array( $data['field']['type'] , array( 'text', 'select', 'number', 'upload', 'url', 'date', 'time' ) ) // specific fields only
+						) :
+						?>
+							<span class="ctmb-after-input"><?php echo esc_html( $data['field']['after_input'] ); ?></span>
+						<?php endif; ?>
 
 						<?php if ( ! empty( $data['field']['desc'] ) ) : ?>
 						<p class="description">
@@ -776,7 +815,7 @@ if ( ! class_exists( 'CT_Meta_Box' ) ) {
 				// Date (form sanitized date from three inputs)
 				case 'date':
 
-					$output = '';
+					$output = ''; // will be empty if invalid time
 
 					// Get month, day and year from $_POST
 					$m = isset( $_POST[ $key . '-month' ] ) ? trim( $_POST[ $key . '-month' ] ) : '';
@@ -793,6 +832,24 @@ if ( ! class_exists( 'CT_Meta_Box' ) ) {
 						// Form the date for saving in to database
 						$output = "$y-$m-$d";
 
+					}
+
+					break;
+
+				// Time
+				case 'time':
+
+					// Is time valid?
+					// If it's not valid 12 or 24 hour format, date will return 1970 instead of current year
+					$ts = strtotime( $output );
+					if ( date( 'Y', $ts ) == date( 'Y' ) ) {
+
+						// Convert to 24 hour time
+						// Easier sorting and comparison
+						$output  = date( 'H:i', $ts );
+
+					} else {
+						$output = ''; // return empty if invalid
 					}
 
 					break;
@@ -823,6 +880,16 @@ if ( ! class_exists( 'CT_Meta_Box' ) ) {
 		 */
 		public function enqueue_styles() {
 
+			global $ctmb_styles_enqueued;
+
+			// Styles need not be enqueued for every meta box on a page
+			if ( ! empty( $ctmb_styles_enqueued ) ) {
+				return;
+			} else {
+				$ctmb_styles_enqueued = true;
+			}
+
+			// Get current screen
 			$screen = get_current_screen();
 
 			// Add/edit any post type
@@ -831,8 +898,12 @@ if ( ! class_exists( 'CT_Meta_Box' ) ) {
 				// Always enable thickbox on add/edit post for custom meta upload fields
 				wp_enqueue_style( 'thickbox' );
 
+				// jQuery Timepicker
+				// https://github.com/jonthornton/jquery-timepicker
+				wp_enqueue_style( 'jquery-timepicker', trailingslashit( CTMB_URL ) . 'css/jquery.timepicker.css', false, $this->version ); // bust cache on update
+
 				// Meta boxes stylesheet
-				wp_enqueue_style( 'ctmb-meta-boxes', trailingslashit( CTMB_URL ) . 'ct-meta-box.css', false, $this->version ); // bust cache on update
+				wp_enqueue_style( 'ctmb-meta-boxes', trailingslashit( CTMB_URL ) . 'css/ct-meta-box.css', false, $this->version ); // bust cache on update
 
 			}
 
@@ -841,11 +912,24 @@ if ( ! class_exists( 'CT_Meta_Box' ) ) {
 		/**
 		 * Enqueue scripts
 		 *
+		 * These are scripts used by all meta boxes on a page.
+		 * This is enqueued once per page in constructor.
+		 *
 		 * @since 0.8.5
 		 * @access public
 		 */
 		public function enqueue_scripts() {
 
+			global $ctmb_scripts_enqueued;
+
+			// Scripts need not be enqueued for every meta box on a page
+			if ( ! empty( $ctmb_scripts_enqueued ) ) {
+				return;
+			} else {
+				$ctmb_scripts_enqueued = true;
+			}
+
+			// Get current screen
 			$screen = get_current_screen();
 
 			// Add/edit any post type
@@ -855,10 +939,124 @@ if ( ! class_exists( 'CT_Meta_Box' ) ) {
 				wp_enqueue_script( 'media-upload' );
 				wp_enqueue_script( 'thickbox' );
 
+				// jQuery Timepicker
+				// https://github.com/jonthornton/jquery-timepicker
+				wp_enqueue_script( 'jquery-timepicker', trailingslashit( CTMB_URL ) . 'js/jquery.timepicker.min.js', false, $this->version ); // bust cache on update
+
 				// Meta boxes JavaScript
-				wp_enqueue_script( 'ctmb-meta-boxes', trailingslashit( CTMB_URL ) . 'ct-meta-box.js', false, $this->version ); // bust cache on update
+				wp_enqueue_script( 'ctmb-meta-boxes', trailingslashit( CTMB_URL ) . 'js/ct-meta-box.js', false, $this->version ); // bust cache on update
 
 			}
+
+		}
+
+		/**
+		 * Localize scripts
+		 *
+		 * @since 2.0
+		 * @access public
+		 */
+		public function localize_scripts() {
+
+			global $ctmb_scripts_localized_globally, $ctmb_fields_localized;
+
+			// Get current screen
+			$screen = get_current_screen();
+
+			// Add/edit any post type
+			if ( 'post' == $screen->base ) {
+
+				// Global localization
+				// This is data all meta boxes will use
+				// Run this localization once per page, not on every meta box instantiation
+				if ( empty( $ctmb_scripts_localized_globally ) ) {
+
+					// Time format 12- or 24-hour format
+					$time_format = get_option( 'time_format' ); // from General Settings
+					if ( ! in_array( $time_format, array( 'g:i a', 'g:ia', 'g:i A', 'g:iA', 'H:i' ) ) ) {
+
+						// If user enters a custom format then default this to 12-hour format.
+						// It is most common in English-speaking countries and most others are able to recognize it.
+						// The reason for this is that a custom format may be invalid, causing the timepicker to fail
+						// converting it to the 24-hour format for saving.
+						$time_format = 'g:i a'; // default WordPress time format
+
+					}
+
+					// Data to pass
+					wp_localize_script( 'ctmb-meta-boxes', 'ctmb', array(
+						'week_days'		=> $this->week_days(), // to show translated week day date fields
+						'time_format'	=> $time_format, // time format from Settings > General
+					) );
+
+					// Make sure this is done only once (on first meta box)
+					$ctmb_scripts_localized_globally = true;
+
+				}
+
+				// Localization per meta box
+				// This will output a ctmb_meta_boxes var having data box merged in for each, the latest having all
+				// It is not ideal to output multiple vars of same name, so see if there is a better way
+				// (maybe WordPress will in the future cause duplicate names to override instead)
+				$data[$this->meta_box['id']] = $this->js_meta_box(); // pass in only as much meta box / field data as necessary
+				$ctmb_fields_localized = empty( $ctmb_fields_localized ) ? array() : $ctmb_fields_localized;
+				if ( ! empty( $data[$this->meta_box['id']] ) ) { // if there is anything to add
+					$ctmb_fields_localized = array_merge( $ctmb_fields_localized, $data );
+					wp_localize_script( 'ctmb-meta-boxes', 'ctmb_meta_boxes', $ctmb_fields_localized );
+				}
+
+			}
+
+		}
+
+		/**
+		 * Days of week, localized
+		 *
+		 * @since 2.0
+		 * @access public
+		 * @return array Array of days of week with 0 - 6 as keys and Sunday - Saturday translated as values
+		 */
+		public function week_days() {
+
+			global $wp_locale;
+
+			$week_days = array();
+
+			for ( $day = 0; $day < 7; $day++ ) {
+				$week_days[$day] = $wp_locale->get_weekday( $day );
+			}
+
+			return $week_days;
+
+		}
+
+		/**
+		 * Meta box and field data for JavaScript
+		 *
+		 * Provide only as much data as is needed
+		 *
+		 * @since 2.0
+		 * @access public
+		 * @return array Array of meta box and field settings
+		 */
+		public function js_meta_box() {
+
+			$js_meta_box = array();
+
+			// Loop fields
+			$fields = $this->meta_box['fields'];
+			foreach ( $fields as $key => $field ) {
+
+				// For now only visibility data is needed for each field
+				if ( empty( $field['visibility'] ) ) {
+					continue;
+				}
+
+				$js_meta_box['fields'][$key]['visibility'] = $field['visibility'];
+
+			}
+
+			return $js_meta_box;
 
 		}
 

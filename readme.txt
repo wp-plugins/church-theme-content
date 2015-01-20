@@ -24,14 +24,7 @@ It enables users to manage *sermons*, *events*, *people* and *locations* to be d
 
 Experienced WordPress developers agree that functionality like this does not belong in themes since themes are intended only for controlling the appearance of a WordPress site. Content that users might expect to take with them if they switch themes should "live" in a plugin in order to [avoid theme lock-in](http://churchthemes.com/2014/05/27/wordpress-theme-users-avoid-lock-in-effect/). Similarly, our approach is not to present content using the plugin since themes offer more control for that purpose. This is why a **compatible theme is required**.
 
-See the plugin's page on churchthemes.com for a [tour of features](http://churchthemes.com/plugins/church-theme-content/).
-
-= Add-ons =
-
-Users can optionally install [add-ons](http://churchthemes.com/plugins/) for additional features.
-
-* [Custom Recurring Events](http://churchthemes.com/plugins/custom-recurring-events)
-* More add-ons are planned...
+See [screenshots](http://wordpress.org/plugins/church-theme-content/screenshots/) for a tour of features. Note also that sermon audio [podcasting](http://churchthemes.com/guides/user/content/sermons/sermon-podcasting/) is built-in and there is support for recurring events.
 
 = Developers =
 
@@ -50,6 +43,17 @@ The following translations are included. Please feel free to [contribute](https:
 * Portuguese (pt_BR) by [Ministre.com.br](http://ministre.com.br)
 * Serbo-Croatian (sr_RS) by Borisa Djuraskovic of [Web Hosting Hub](http://www.webhostinghub.com)
 
+= Add-ons =
+
+Users can optionally install [add-ons](http://churchthemes.com/plugins/) for additional features.
+
+* [Custom Recurring Events](http://churchthemes.com/plugins/custom-recurring-events)
+* More add-ons are planned...
+
+= More information =
+
+We maintain a page for this plugin on churchthemes.com that you can view for [more information](http://churchthemes.com/plugins/church-theme-content/).
+
 = Follow us =
 
 * Visit [churchthemes.com](http://churchthemes.com) for compatible themes, add-ons and guides
@@ -58,13 +62,7 @@ The following translations are included. Please feel free to [contribute](https:
 
 == Installation ==
 
-1. Log into your WordPress admin area
-2. Go to **Plugins** > **Add New**
-3. Search for *Church Theme Content*
-4. Click **Install Now** for the plugin
-5. Click **Activate Plugin** after installation
-
-Please see [Installing Plugins](http://codex.wordpress.org/Managing_Plugins#Installing_Plugins) in the WordPress Codex for additional information on installing plugins.
+Please see [Installing Plugins](http://codex.wordpress.org/Managing_Plugins#Installing_Plugins) in the WordPress Codex.
 
 == Frequently Asked Questions ==
 
