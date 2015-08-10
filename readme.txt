@@ -2,7 +2,7 @@
 Contributors: churchthemes, stevengliebe
 Tags: church, churches, sermon, sermons, ministry, ministries
 Requires at least: 3.6
-Tested up to: 4.2
+Tested up to: 4.3
 Stable tag: trunk
 License: http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 
@@ -72,7 +72,7 @@ Please see our [Plugin Installation](http://churchthemes.com/guides/user/plugins
 
 No, a theme made specifically for use with this plugin is necessary for displaying content. Please see *Who this is for* in the plugin [description](http://wordpress.org/plugins/church-theme-content/).
 
-= Can make a theme that uses this plugin? =
+= Can I make a theme that uses this plugin? =
 
 Yes, please see the [Developer Guide](http://churchthemes.com/guides/developer/church-theme-content/).
 
