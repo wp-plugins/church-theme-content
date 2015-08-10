@@ -3,7 +3,7 @@
  * Plugin Name: Church Theme Content
  * Plugin URI: http://churchthemes.com/plugins/church-theme-content
  * Description: Provides compatible themes with sermon, event, person and location post types. A <strong>compatible theme is required</strong> for displaying content.
- * Version: 1.3.2
+ * Version: 1.3.3
  * Author: churchthemes.com
  * Author URI: http://churchthemes.com
  * License: http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
@@ -53,19 +53,19 @@ class Church_Theme_Content {
 	public function __construct() {
 
 		// Set plugin data
-		add_action( 'plugins_loaded', array( &$this, 'set_plugin_data' ), 1 );
+		add_action( 'plugins_loaded', array( $this, 'set_plugin_data' ), 1 );
 
 		// Define constants
-		add_action( 'plugins_loaded', array( &$this, 'define_constants' ), 1 );
+		add_action( 'plugins_loaded', array( $this, 'define_constants' ), 1 );
 
 		// Load language file
-		add_action( 'plugins_loaded', array( &$this, 'load_textdomain' ), 1 );
+		add_action( 'plugins_loaded', array( $this, 'load_textdomain' ), 1 );
 
 		// Set includes
-		add_action( 'plugins_loaded', array( &$this, 'set_includes' ), 1 );
+		add_action( 'plugins_loaded', array( $this, 'set_includes' ), 1 );
 
 		// Load includes
-		add_action( 'plugins_loaded', array( &$this, 'load_includes' ), 1 );
+		add_action( 'plugins_loaded', array( $this, 'load_includes' ), 1 );
 
 	}
 
